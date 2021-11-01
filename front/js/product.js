@@ -1,19 +1,19 @@
+// variable :
+let localStorageProduct = JSON.parse(localStorage.getItem("product"));
+
+// séario
+fetch(`http://localhost:3000/api/products/${getProductId()}`)
+  .then((res) => res.json())
+  .then(function (products) {
+    displayProduct(products);
+    addToCart();
+    return products;
+  });
+
+/// fonction
 function getProductId() {
   return new URL(location.href).searchParams.get("id");
 }
-productId = getProductId();
-
-function getProduct(productId) {
-  return fetch(`http://localhost:3000/api/products/${productId}`)
-    .then((res) => res.json())
-    .then(function (products) {
-      displayProduct(products);
-      return products;
-    });
-}
-
-getProduct(productId);
-
 function displayProduct(product) {
   const image = document.getElementsByClassName("item__img");
 
@@ -33,10 +33,55 @@ function displayProduct(product) {
   pageTitle.innerText = product.name;
 
   const colorSelector = document.getElementById("colors");
-  // Boucle sur l'array "colors" contenant les couleurs du produits pour incure dans <select>
+
   for (i = 0; i < product.colors.length; i++) {
     let thisColor = product.colors[i];
     let colorOption = `<option products=${thisColor}>${thisColor}</option>`;
     colorSelector.insertAdjacentHTML("beforeend", colorOption);
+  }
+}
+
+function addToCart() {
+  document.getElementById("addToCart").addEventListener("click", function () {
+    let products = {
+      color: document.getElementById("colors").value,
+      quantity: document.getElementById("quantity").value,
+      id: getProductId(),
+    };
+
+    // if (color == "" && quantity == 0) {
+    //   return alert("Veuillez choisir une couleur et definir une quantitée");
+    // }
+    // if (quantity < 1) {
+    //   return alert("Veuillez Choisir une quantitée superieur à 0.");
+    // }
+    // if (color == "") {
+    //   return alert("Veuiller choisir une couleur");
+    // }
+
+    addToLocalStorage(products);
+    
+  });
+}
+function addToLocalStorage(products) {
+  // if (
+  //   localStorageProduct.id == products.id &&
+  //   localStorageProduct.color == products.color
+  // ) {
+  //   localStorageProduct.quantity += products.quantity;
+  //   localStorageProduct.splice(index, 1);
+  //   localStorage.setItem("product", JSON.stringify(localStorageProduct));
+  // } else 
+  if (localStorageProduct) {
+    
+    localStorageProduct.push(products);
+    localStorage.setItem("product", JSON.stringify(localStorageProduct));
+    console.log(localStorageProduct);
+  }
+  else{
+    localStorageProduct = [];
+    localStorageProduct.push(products);
+    localStorage.setItem("product", JSON.stringify(localStorageProduct));
+    console.log(localStorageProduct);
   }
 }
