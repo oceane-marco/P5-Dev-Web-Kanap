@@ -1,45 +1,101 @@
 let products = [];
 products = JSON.parse(localStorage.getItem("products"));
+console.log(products);
+let totalArticles = 0;
+let totalPrice = 0;
 
 /* 1 recuperé les donner dans le local. 
    2 recuperé les donner de l'api pour chaque produits)
 */
+if (products == null || products.length == 0) {
+  document.getElementsByTagName("h1")[0].innerText = "Votre panier est vide";
+  document.getElementById(`totalPrice`).innerText = totalPrice;
+  document.getElementById(`totalQuantity`).innerText = totalArticles;
+} else {
+  for (i = 0; i < products.length; i++) {
+    let quantity = Number(products[i].quantity);
+    let color = products[i].color;
+    let id = products[i].id;
+    totalArticles += quantity;
 
-for (i = 0; i < products.length; i++) {
-  let quantity = products[i].quantity;
-  let color = products[i].color;
-  fetch(`http://localhost:3000/api/products/${products[i].id}`)
-    .then((res) => res.json())
-    .then(function (product) {
-      displayProduct(product, quantity, color);
-      console.log(product);
-      return products;
+    fetch(`http://localhost:3000/api/products/${products[i].id}`)
+      .then((res) => res.json())
+      .then(function (product) {
+        totalPrice += Number(product.price) * quantity;
+        displayProduct(product, quantity, color, totalPrice);
+        listenForDeletProduct(products, id, color);
+        listenForQuantity(products, quantity);
+        
+        
+        return product;
+      });
+      
+      
+        
+        
+  }
+  
+}
+
+function displayProduct(product, quantity, color ) {
+  document.getElementById("cart__items").innerHTML += `
+    <article class="cart__item" id="${product._id}">
+        <div class="cart__item__img">
+             <img src=${product.imageUrl} alt=${product.altTxt}>
+        </div>
+        <div class="cart__item__content">
+            <div class="cart__item__content__titlePrice">
+                <h2>${product.name}</h2>
+                <p>${product.price}€</p>
+                <p>${color}</p>
+            </div>
+            <div class="cart__item__content__settings">
+            <div class="cart__item__content__settings__quantity">
+                <p>Qté : </p>
+                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value ="${quantity}">
+            </div>
+            <div class="cart__item__content__settings__delete">
+                <p class="deleteItem">Supprimer</p>
+            </div>
+            </div>
+         </div>
+    </article>`;
+  document.getElementById(`totalPrice`).innerText = totalPrice;
+  document.getElementById(`totalQuantity`).innerText = totalArticles;
+  
+};
+
+//!résusir a recuperé les bouton suprimer pour les appeler ...
+//* mettre dans une fonction appeler dans le then.
+function listenForDeletProduct(products, id, color) {
+  let deleteItem = document.getElementsByClassName("deleteItem");
+
+  for (l = 0; l < deleteItem.length; l++) {
+    deleteItem[l].addEventListener("click", function () {
+      let confirm = window.confirm(
+        "Etes vous sûr de vouloir supprimer cet article ?"
+      );
+      if (confirm == true) {
+        products = products.filter(
+          (product) => product.id !== id || product.color !== color
+        );
+        console.log(products);
+        localStorage.setItem("products", JSON.stringify(products));
+        location.reload();
+      }
     });
+  }
 }
 
+function listenForQuantity(products, quantity) {
+  let productsQuantity = document.getElementsByClassName("itemQuantity");
+ 
+  for (l = 0; l < productsQuantity.length; l++) {
+ 
+    productsQuantity[l].addEventListener("change", function (productsQuantity) {
+      let quantityValue = Number(productsQuantity[l].value); //! ne fonctionne pas !!!!!
+      console.log(quantityValue);
+    });
+ }
+};
 
-function displayProduct(product, quantity, color){
-    document.getElementById("cart__items").innerHTML += `
-     <article class="cart__item" data-id="${product._id}">
-     <div class="cart__item__img">
-     <img src=${product.imageUrl} alt=${product.altTxt}>
-      </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__titlePrice">
-                    <h2>${product.name}</h2>
-                    <p>${product.price}€</p>
-                    <p>${color}</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantity}">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article>`;
-    
-}
