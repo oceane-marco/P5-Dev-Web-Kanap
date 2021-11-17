@@ -1,120 +1,145 @@
-let products = [];
-products = JSON.parse(localStorage.getItem("products"));
-let allProducts = [];
+let productsInCart = [];
+productsInCart = JSON.parse(localStorage.getItem("products"));
 let totalQuantity = 0;
 let totalPrice = 0;
 
-if (products == null || products.length == 0) {
+if (isCartempty()) {
+  displayemptyCard();
+} else {
+  fetch("http://localhost:3000/api/products/")
+    .then((res) => res.json())
+    .then(function (allProducts) {
+      let products = [];
+
+      productsInCart.forEach((productInCart) => {
+        let product = allProducts.find((item) => item._id == productInCart.id);
+        console.log(product);
+        product.quantity = Number(productInCart.quantity);
+        product.color = productInCart.color;
+
+        products.push(product);
+      });
+      console.log(products);
+      displayProduct(products);
+      deleteProduct(products, productsInCart);
+      displayTotalPrice(products);
+      displayTotalQuantity(products);
+      changeQuantity(products, productsInCart);
+    });
+}
+
+function isCartempty() {
+  if (productsInCart == null || productsInCart.length == 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function displayemptyCard() {
   document.getElementsByTagName("h1")[0].innerText = "Votre panier est vide";
   document.getElementsByClassName("cart").style.display = "none";
- 
-} else{
-    
-    findProduct(products);
-    console.log(allProducts);
-    displayProduct(allProducts);
-    // total(allProducts);
-    // deleteProduct(allProducts, products);
 }
 
-function findProduct(products) {
-   products.forEach(element => {
-        let quantity = Number(element.quantity);
-        let color = element.color;
-        let id = element.id;
-        fetch(`http://localhost:3000/api/products/${id}`) //* 1 recuperé uniquement les élement qui on le meme id
-          .then((res) => res.json())
-          .then(function (item) {
-            
-            let product = {
-              id,
-              color,
-              quantity,
-              name: item.name,
-              price: item.price,
-              img: item.imageUrl,
-              description: item.description,
-              altTxt: item.altTxt,
-            }
-            allProducts.push(product);
-           return allProducts
-          })
-
-   });
-}
-
-function displayProduct(allProducts) {
-  allProducts.forEach(product => {
-     document.getElementById("cart__items").innerHTML += render(product);
+function displayProduct(products) {
+  products.forEach((product) => {
+    document.getElementById("cart__items").innerHTML += render(product);
   });
-    
-  
 }
 
-function render(product){
-    return `
-        <article class="cart__item" id="${product.id}">
+function render(product) {
+  return `
+        <article class="cart__item" id="${product._id}-${product.color}">
             <div class="cart__item__img">
-                <img src=${product.img} alt=${product.altTxt}>
+                <img src=${product.imageUrl} alt=${product.altTxt}>
             </div>
             <div class="cart__item__content">
                 <div class="cart__item__content__titlePrice">
                     <h2>${product.name}</h2>
-                    <p>${product.price}€</p>
+                    <p>${product.price}</p>
                     <p>${product.color}</p>
                 </div>
                 <div class="cart__item__content__settings">
                 <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
-                    <input type="number" class="itemQuantity" id="quantity${product.id}" name="itemQuantity" min="1" max="100" value ="${product.quantity}">
+                    <input type="number" class="itemQuantity" id="quantity-${product._id}-${product.color}" name="itemQuantity" min="1" max="100" value ="${product.quantity}">
                 </div>
                 <div class="cart__item__content__settings__delete">
-                    <p class="deleteItem" id="delete-button-${product.id}-${product.color}">Supprimer</p>
+                    <p class="deleteItem" id="delete-button-${product._id}-${product.color}">Supprimer</p>
                 </div>
                 </div>
             </div>
         </article>`;
 }
+function displayTotalPrice(products) {
+  let totalPrice = 0;
+  products.forEach((product) => {
+    totalPrice = Number(product.price) * Number(product.quantity);
+  });
+  document.getElementById(`totalPrice`).innerText = totalPrice;
+}
+function displayTotalQuantity(products) {
+  let totalQuantity = 0;
+  products.forEach((product) => {
+    totalQuantity += Number(product.quantity);
+  });
+  document.getElementById(`totalQuantity`).innerText = totalQuantity;
+}
+function deleteProduct(products, productsInCart) {
+  products.forEach((product) => {
+    document
+      .getElementById(`delete-button-${product._id}-${product.color}`)
+      .addEventListener("click", function () {
+        let confirm = window.confirm(
+          "Etes vous sûr de vouloir supprimer L'article " +
+            product.name +
+            " de couleur " +
+            product.color +
+            " ?"
+        );
+        if (confirm == true) {
+          let index = productsInCart.findIndex(
+            (element) =>
+              element._id == product._id && element.color == product.color
+          );
+          console.log(index);
+          productsInCart.splice(index, 1);
+          console.log(productsInCart);
+          localStorage.setItem("products", JSON.stringify(productsInCart));
+          document.getElementById(`${product._id}-${product.color}`).remove();
+          displayTotalPrice(products);
+          displayTotalQuantity(products);
+        }
+      });
+  });
+}
+function changeQuantity(products, productsInCart) {
+  products.forEach((product) => {
 
-// function total(allProducts) {
-//   totalQuantity += Number(product.quantity);
-//   totalPrice = Number(product.price) * Number(product.quantity);
-//   document.getElementById(`totalPrice`).innerText = totalPrice;
-//   document.getElementById(`totalQuantity`).innerText = totalQuantity;
-// }
+    document.getElementById(`quantity-${product._id}-${product.color}`).addEventListener("change", function () {
+      let quantity = document.getElementById(
+        `quantity-${product._id}-${product.color}`
+      ).value;
 
-// function  deleteProduct(product, products){
-//  document.getElementById( `delete-button-${product.id}-${product.color}`).addEventListener("click", function () {
-//       let confirm = window.confirm(
-//         "Etes vous sûr de vouloir supprimer L'article " + product.name + " de couleur " + products.color + " ?"
-//       );
-//       if (confirm == true) {
-//        let index = products.findIndex(
-//          (element) => element.id == product.id && element.color == product.color
-//        );
-//        products.splice(index, 1);
-//        console.log(products);
-//        localStorage.setItem("products", JSON.stringify(products));
-//        location.reload();
-//      }
-//    });
- 
-// };
-
-
-
-
-
-
-
-
+      productsInCart.filter((productInCart) => productInCart.id == product._id || productInCart.color == product.color).quantity = quantity;
+      product.quantity = quantity;
+      
+    console.log(quantity);
+    localStorage.setItem("products", JSON.stringify(productsInCart));
+     displayTotalQuantity(product);
+     displayTotalPrice(product);
+    });
+    
+  });
+  
+}
 // console.log(products);
 // let totalArticles = 0;
 // let totalPrice = 0;
 
-// 1 recuperé les donner dans le local. 
+// 1 recuperé les donner dans le local.
 // 2 recuperé les donner de l'api pour chaque produits)
-// 
+//
 // if (products == null || products.length == 0) {
 //   document.getElementsByTagName("h1")[0].innerText = "Votre panier est vide";
 //   document.getElementById(`totalPrice`).innerText = totalPrice;
@@ -133,16 +158,12 @@ function render(product){
 //         displayProduct(product, quantity, color, totalPrice);
 //         listenForDeletProduct(products, id, color);
 //         listenForQuantity(products, quantity);
-        
-        
+
 //         return product;
 //       });
-      
-      
-        
-        
+
 //   }
-  
+
 // }
 
 // function displayProduct(product, quantity, color ) {
@@ -170,7 +191,7 @@ function render(product){
 //     </article>`;
 //   document.getElementById(`totalPrice`).innerText = totalPrice;
 //   document.getElementById(`totalQuantity`).innerText = totalArticles;
-  
+
 // };
 
 // //!résusir a recuperé les bouton suprimer pour les appeler ...
@@ -197,9 +218,9 @@ function render(product){
 
 // function listenForQuantity(products, quantity) {
 //   let productsQuantity = document.getElementsByClassName("itemQuantity");
- 
+
 //   for (l = 0; l < productsQuantity.length; l++) {
- 
+
 //     productsQuantity[l].addEventListener("change", function (productsQuantity) {
 //       let quantityValue = Number(productsQuantity[l].value); //! ne fonctionne pas !!!!!
 //       console.log(quantityValue);
