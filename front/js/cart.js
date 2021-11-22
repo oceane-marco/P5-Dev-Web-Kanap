@@ -2,7 +2,8 @@ let productsInCart = [];
 productsInCart = JSON.parse(localStorage.getItem("products"));
 let totalQuantity = 0;
 let totalPrice = 0;
-
+// senario
+//* afficher le panier
 if (isCartempty()) {
   displayemptyCard();
 } else {
@@ -22,12 +23,42 @@ if (isCartempty()) {
       console.log(products);
       displayProduct(products);
       deleteProduct(products, productsInCart);
-      displayTotalPrice(products);
-      displayTotalQuantity(products);
       changeQuantity(products, productsInCart);
+      displayTotalQuantity(products);
+      displayTotalPrice(products);
+     
     });
+ 
 }
+//* formulaire 
+//1 verifier les element mis dans le formulaire
+console.log(document.getElementById("firstName"));
+document.getElementById("firstName").addEventListener("change", function () {
+  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
+  if (regex.test(this.value)) {
+    console.log(regex.test(this.value));
+    return true;
+  } else {
+    document.getElementById("firstNameErrorMsg").innerText = "invalide";
+  }
+});
+document.getElementById("lastName").addEventListener("change", function () {
+  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
+  if (regex.test(this.value)) {
+    console.log(regex.test(this.value));
+    return true;
+  } else {
+    document.getElementById("lastNameErrorMsg").innerText = "invalide";
+  }
+  adr
+});
 
+//2 envoyer le formulaire une fois que toutesles donner sont valide 
+
+
+
+
+// fonction
 function isCartempty() {
   if (productsInCart == null || productsInCart.length == 0) {
     return true;
@@ -74,7 +105,7 @@ function render(product) {
 function displayTotalPrice(products) {
   let totalPrice = 0;
   products.forEach((product) => {
-    totalPrice = Number(product.price) * Number(product.quantity);
+    totalPrice += Number(product.price) * Number(product.quantity);
   });
   document.getElementById(`totalPrice`).innerText = totalPrice;
 }
@@ -113,26 +144,25 @@ function deleteProduct(products, productsInCart) {
       });
   });
 }
+//! a finir 
 function changeQuantity(products, productsInCart) {
   products.forEach((product) => {
-
     document.getElementById(`quantity-${product._id}-${product.color}`).addEventListener("change", function () {
-      let quantity = document.getElementById(
-        `quantity-${product._id}-${product.color}`
-      ).value;
-
-      productsInCart.filter((productInCart) => productInCart.id == product._id || productInCart.color == product.color).quantity = quantity;
-      product.quantity = quantity;
-      
-    console.log(quantity);
-    localStorage.setItem("products", JSON.stringify(productsInCart));
-     displayTotalQuantity(product);
-     displayTotalPrice(product);
-    });
-    
-  });
+      let quantity = this.value;
+      let filterProduct = productsInCart.filter((productInCart) => productInCart.id == product._id || productInCart.color == product.color);
   
+      filterProduct[0].quantity = Number(quantity);
+      console.log(filterProduct);
+      localStorage.setItem("products", JSON.stringify(productsInCart));
+
+      product.quantity = Number(quantity);
+      displayTotalQuantity(products);
+      displayTotalPrice(products);// ne marche que avec le dernier articles
+    });
+  });
 }
+
+
 // console.log(products);
 // let totalArticles = 0;
 // let totalPrice = 0;
