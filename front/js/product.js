@@ -23,7 +23,7 @@ function displayProduct(product) {
   h1.innerText = product.name;
 
   const price = document.getElementById("price");
-  price.innerText = product.price;
+  price.innerText = formatter.format(product.price);
 
   const description = document.getElementById("description");
   description.innerText = product.description;

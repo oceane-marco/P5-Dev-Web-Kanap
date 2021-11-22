@@ -57,7 +57,7 @@ function render(product) {
             <div class="cart__item__content">
                 <div class="cart__item__content__titlePrice">
                     <h2>${product.name}</h2>
-                    <p>${product.price}</p>
+                    <p>${formatter.format(product.price)}</p>
                     <p>${product.color}</p>
                 </div>
                 <div class="cart__item__content__settings">
@@ -77,7 +77,7 @@ function displayTotalPrice(products) {
   products.forEach((product) => {
     totalPrice += Number(product.price) * Number(product.quantity);
   });
-  document.getElementById(`totalPrice`).innerText = totalPrice;
+  document.getElementById(`totalPrice`).innerText = formatter.format(totalPrice);
 }
 function displayTotalQuantity(products) {
   let totalQuantity = 0;
