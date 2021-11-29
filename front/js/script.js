@@ -1,3 +1,5 @@
+//*acceuil
+// recuperé chancun des produit dzns l'api et l'afficher
 fetch("http://localhost:3000/api/products/")
   .then((res) => res.json())
   .then(function (products) {
@@ -6,7 +8,7 @@ fetch("http://localhost:3000/api/products/")
       document.getElementById("items").innerHTML += render(product);
     });
   });
-
+// rendu de produits
 function render(product) {
   return `
     <a href="./product.html?id=${product._id}">

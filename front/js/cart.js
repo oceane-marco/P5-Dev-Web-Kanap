@@ -1,12 +1,15 @@
+//*panier
+// variable utile
 let productsInCart = [];
 productsInCart = JSON.parse(localStorage.getItem("products"));
 let totalQuantity = 0;
 let totalPrice = 0;
-// senario
-//* afficher le panier
+//* senario
+
 if (isCartempty()) {
   displayemptyCard();
 } else {
+  //recuperé chacun des produit present dans le localstorage
   fetch("http://localhost:3000/api/products/")
     .then((res) => res.json())
     .then(function (allProducts) {
@@ -31,7 +34,8 @@ if (isCartempty()) {
       displayTotalPrice(products);
     });
 }
-// fonction
+//* fonction
+// verifier si il y a quelquechose dans le localstorage ou non
 function isCartempty() {
   if (productsInCart == null || productsInCart.length == 0) {
     return true;
@@ -39,10 +43,12 @@ function isCartempty() {
     return false;
   }
 }
+// affichage si il n'y a rien dans le panier
 function displayemptyCard() {
   document.getElementsByTagName("h1")[0].innerText = "Votre panier est vide";
   document.getElementsByClassName("cart").style.display = "none";
 }
+//aficher un rendue pour chaque produit
 function displayProduct(products) {
   products.forEach((product) => {
     document.getElementById("cart__items").innerHTML += render(product);
@@ -72,6 +78,7 @@ function render(product) {
             </div>
         </article>`;
 }
+//afficher le prix total
 function displayTotalPrice(products) {
   let totalPrice = 0;
   products.forEach((product) => {
@@ -79,6 +86,7 @@ function displayTotalPrice(products) {
   });
   document.getElementById(`totalPrice`).innerText = formatter.format(totalPrice);
 }
+//afficher la quantiter Total
 function displayTotalQuantity(products) {
   let totalQuantity = 0;
   products.forEach((product) => {
@@ -86,6 +94,7 @@ function displayTotalQuantity(products) {
   });
   document.getElementById(`totalQuantity`).innerText = totalQuantity;
 }
+// ecoute du bouton suprimer
 function listenDeleteProduct(products, productsInCart) {
   products.forEach((product) => {
     document
@@ -104,6 +113,7 @@ function listenDeleteProduct(products, productsInCart) {
       });
   });
 }
+//ecoute du de la quantiter du produit
 function listenChangeQuantity(products, productsInCart) {
   products.forEach((product) => {
     document.getElementById(`quantity-${product._id}-${product.color}`).addEventListener("change", function () {

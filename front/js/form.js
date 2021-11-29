@@ -1,113 +1,152 @@
 //* formulaire
-/// si tout ça renvoi true alors on envoie le formulaire.
-document.getElementById("order").addEventListener( 'click', function(e) {
-  if ( firstName() && lastName() && address() && city() && email()){
-   e.preventDefault;
-   creatArrayOrder();
-   console.log(order);
-  }else {
-   e.preventDefault;
-   alert("veuillez remplir le formulaire");
+let lastName = document.getElementById("lastName");
+let firstName = document.getElementById("firstName");
+let adress = document.getElementById("address");
+let city = document.getElementById("city");
+let email = document.getElementById("email");
+// écoute des formulaire
+firstName.addEventListener("change",function() {
+  if (!validFirstName()){
+    
+    showErr(
+      "firstName",
+      "Invalide, veuillez entrée vortre prénom avec une majuscule au debut et au moins 3 lettres."
+    );
   }
+  showValid("firstName")
+});
+lastName.addEventListener("change", function () {
+  if (!validLastName()) {
+    showErr(
+      "lastName",
+      "Invalide, veuillez entrée vortre nom avec un majuscule au debut et au moins 3 lettres."
+    );
+  };
+  showValid("lastName");
+});
+adress.addEventListener("change", function () {
+  if (!validAddress()) {
+    showErr(
+      "adress",
+      "Invalide, veuillez entrée une addresse."
+    );
+  }
+  showValid("adress");
+});
+city.addEventListener("change", function () {
+  if (!validCity()) {
+    showErr(
+      "city",
+      "Invalide, veillez entrez un nom de ville comme: Paris"
+    );
+  }
+  showValid("city");
+});
+email.addEventListener("change", function () {
+  if (!validEmail()) {
+    showErr(
+      "email",
+      "Veuillez entrer une adresse e-mail valide, exemple : email@domain.com"
+    );
+  }
+  showValid("email");
+});
+
+/// si tout  renvoi true alors on envoie le formulaire.
+document.getElementById("order").addEventListener( 'click', function(e) {
+  e.preventDefault();
+  if ( !validFirstName() || !validLastName() || !validAddress() || !validCity() || !validEmail()){
+   alert("veuillez remplir le formulaire");
+   return
+  }
+  console.log('le formulaire est bon')
+  let products = JSON.parse(localStorage.getItem("products"));
+  let ids = products.map(product => product.id)
+  console.log(ids);
+  let payload = {
+    products: ids,
+    contact: {
+      firstName: firstName.value ,
+      lastName : lastName.value,
+      address : adress.value,
+      city : city.value,
+      email : email.value
+    }
+  }
+
+ fetch("http://localhost:3000/api/products/order",{
+    method: 'POST',
+    headers:{
+      'accept': 'application/json' ,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  // recuperé orderId et rediriger vers la page confirmation
+  .then((res) => res.json())
+  .then(function (response) {
+    window.location.assign("confirmation.html?orderId=" + response.orderId);
+  });
+
 });
 //1 verifier les element mis dans le formulaire
-function firstName() {
-  let firstName = false;
-  document.getElementById("firstName").addEventListener("change", function() {
-    let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]{3,}$");
-    console.log(regex.test(this.value));
-    if (regex.test(this.value)) {
-      document.getElementById("firstNameErrorMsg").style.display = "none";
-      firstName = true;
-    } else {
-      document.getElementById("firstNameErrorMsg").style.display = "initial";
-      document.getElementById("firstNameErrorMsg").innerText =
-        "Invalide, veuillez entrée vortre prénom avec une majuscule au debut et au moins 3 lettres.";
-    }
-  });
-  return firstName
+function validFirstName() {
+  let valide = false;
+  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]{3,}$");
+  console.log(regex.test(firstName.value));
+  if (regex.test(firstName.value)) {
+    valide = true;
+  } 
+  return valide
 }
-function lastName() { 
-  let lastName = false;
-  document.getElementById("lastName").addEventListener("change", function () {
-    let regex = new RegExp("^[A-Z][A-Za-ëïzéèê\\-]+$");
-    console.log(regex.test(this.value));
-    if (regex.test(this.value)) {
-      document.getElementById("firstNameErrorMsg").style.display = "none";
-      lastName = true;
-    } else {
-      document.getElementById("firstNameErrorMsg").style.display = "initial";
-      document.getElementById("lastNameErrorMsg").innerText =
-        "Invalide, veuillez entrée vortre prénom avec un majuscule au debut et au moins 3 lettres.";
-    }
-  });  
- return lastName;
+function validLastName() { 
+  let valide = false;
+  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê\\-]+$");
+  console.log(regex.test(lastName.value));
+  if (regex.test(lastName.value)) {
+    valide = true;
+  } 
+ return valide;
 };
-//! trouver la bonne regex
-function address() { 
+
+function validAddress() { 
   
-  let address = false;
-
-  document.getElementById("address").addEventListener("change", function() {
-    let regex = new RegExp(""); 
-    
-    if (regex.test(this.value)) {
-      console.log(regex.test(this.value));
-      document.getElementById("firstNameErrorMsg").style.display = "none";
-      address = true;
-    } else {
-      document.getElementById("firstNameErrorMsg").style.display = "initial";
-      document.getElementById("addressErrorMsg").innerText = "veillez entrées une adresse dans le format : 18 rue des boulanger";
-    }
-  });
-  return address;
+  let valide = false;
+  let regex = new RegExp("[0-9-A-Za-z]{3,}\\s"); 
+  console.log(regex.test(adress.value));
+  if (regex.test(adress.value)) {
+    valide = true;
+  } 
+  return valide;
 }
-function city() { 
-  let city = false;
-
-  document.getElementById("city").addEventListener("change", function () {
-    let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
-    console.log(regex.test(this.value));
-    if (regex.test(this.value)) {
-      document.getElementById("cityErrorMsg").style.display = "none";
-      city = true;
-    } else {
-      document.getElementById("firstNameErrorMsg").style.display = "initial";
-      document.getElementById("cityErrorMsg").innerText = "invalide";
-    }
-  });
-  return city;
+function validCity() { 
+  let valide = false;
+  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
+  console.log(regex.test(city.value));
+  if (regex.test(city.value)) {
+    valide = true;
+  }
+  return valide;
 }
-function email() {   
-  let email = false;
-  document.getElementById("email").addEventListener("change", function () {
-    let regex = new RegExp(
-      "^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$"
-    );
-    console.log(regex.test(this.value));
-    if (regex.test(this.value)) {
-      document.getElementById("firstNameErrorMsg").style.display = "none";
-      email = true;
-    } else {
-      document.getElementById("firstNameErrorMsg").style.display = "initial";
-      document.getElementById("emailErrorMsg").innerText =
-        "Veuillez entrer une adresse e-mail valide, exemple : email@domain.com";
-    }
-  });
-  return email
+
+function validEmail() {   
+  let valide = false;
+  let regex = new RegExp("^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$");
+  console.log(regex.test(email.value));
+  if (regex.test(email.value)) {
+  valide = true;
+  } 
+  return valide
 }
-// function creatArrayOrder() {
-//   let order = [];
- 
-//   let firstName = document.getElementById("firstName").value;
-//   let lastName = document.getElementById("lastName").value;
-//   let address = document.getElementById("address").value;
-//   let city = document.getElementById("city").value;
-//   let email = document.getElementById("email").value;
+// message de validation du formulaire
 
-//   let userInformation = { firstName, lastName, address, city, email };
-//   let productsOrder = JSON.parse(localStorage.getItem("products"));
+function showErr(element, message) {
+  console.log(document.getElementById(`${element}ErrorMsg`));
+  console.log(message);
+  document.getElementById(`${element}ErrorMsg`).style.display = "initial";
+  document.getElementById(`${element}ErrorMsg`).textContent = `${message}`;
+}
 
-//   order.push(userInformation, productsOrder)
-//   return order
-// }
+function showValid(element){
+  document.getElementById(`${element}ErrorMsg`).style.display = "none";
+}

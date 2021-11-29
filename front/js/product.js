@@ -1,6 +1,7 @@
 // variable :
 let id = getProductId();
-  // séario
+//* séario
+//recuperé le produit avec sont id dans l'API
   fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
     .then(function (product) {
@@ -9,10 +10,12 @@ let id = getProductId();
       return product;
     });
 
-/// fonction
+///* fonction
+//recuperé id dans l'url
 function getProductId() {
   return new URL(location.href).searchParams.get("id");
 }
+//afficher le produit
 function displayProduct(product) {
   const image = document.getElementsByClassName("item__img");
 
@@ -39,7 +42,7 @@ function displayProduct(product) {
     colorSelector.insertAdjacentHTML("beforeend", colorOption);
   }
 }
-
+// recuperé les donner entré par l'utilisateur et le mettre dans le localstorage
 function listenForCardAddition(product) {
   document.getElementById("addToCart").addEventListener("click", function () {
     let color = document.getElementById("colors").value;
