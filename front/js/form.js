@@ -53,40 +53,43 @@ email.addEventListener("change", function () {
 });
 
 /// si tout  renvoi true alors on envoie le formulaire.
-document.getElementById("order").addEventListener( 'click', function(e) {
+document.getElementById("order").addEventListener("click", function (e) {
   e.preventDefault();
-  if ( !validFirstName() || !validLastName() || !validAddress() || !validCity() || !validEmail()){
-   alert("veuillez remplir le formulaire");
-   return
+  if ( !validFirstName() || !validLastName() || !validAddress() || !validCity() || !validEmail()) {
+    alert("veuillez remplir le formulaire");
+    return;
   }
-  console.log('le formulaire est bon')
+  console.log("le formulaire est bon");
+  //mettre toutes les information dans un tableau
   let products = JSON.parse(localStorage.getItem("products"));
-  let ids = products.map(product => product.id)
+  let ids = products.map((product) => product.id);
   console.log(ids);
   let payload = {
     products: ids,
     contact: {
-      firstName: firstName.value ,
-      lastName : lastName.value,
-      address : adress.value,
-      city : city.value,
-      email : email.value
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: adress.value,
+      city: city.value,
+      email: email.value,
     }
-  }
-
- fetch("http://localhost:3000/api/products/order",{
-    method: 'POST',
-    headers:{
-      'accept': 'application/json' ,
-      'Content-Type': 'application/json'
+  };
+  // netoyer le local storage
+  localStorage.clear();
+  // envoyer les donner au local storage 
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
-  // recuperé orderId et rediriger vers la page confirmation
-  .then((res) => res.json())
-  .then(function (response) {
-    window.location.assign("confirmation.html?orderId=" + response.orderId);
-  });
+    // recuperé orderId et rediriger vers la page confirmation
+    .then((res) => res.json())
+    .then(function (response) {
+      window.location.assign("confirmation.html?orderId=" + response.orderId);
+    });
 
 });
 //1 verifier les element mis dans le formulaire
