@@ -46,7 +46,7 @@ function isCartempty() {
 // affichage si il n'y a rien dans le panier
 function displayemptyCard() {
   document.getElementsByTagName("h1")[0].innerText = "Votre panier est vide";
-  document.getElementsByClassName("cart").style.display = "none";
+  document.getElementsByClassName("cart")[0].style.display = "none" ;
 }
 //aficher un rendue pour chaque produit
 function displayProduct(products) {
