@@ -5,15 +5,15 @@ let adress = document.getElementById("address");
 let city = document.getElementById("city");
 let email = document.getElementById("email");
 // écoute des formulaire
-firstName.addEventListener("change",function() {
-  if (!validFirstName()){
-    
+firstName.addEventListener("change", function () {
+  if (!validFirstName()) {
     showErr(
       "firstName",
       "Invalide, veuillez entrée vortre prénom avec une majuscule au debut et au moins 3 lettres."
     );
+  } else {
+    showValid("firstName");
   }
-  showValid("firstName")
 });
 lastName.addEventListener("change", function () {
   if (!validLastName()) {
@@ -21,26 +21,23 @@ lastName.addEventListener("change", function () {
       "lastName",
       "Invalide, veuillez entrée vortre nom avec un majuscule au debut et au moins 3 lettres."
     );
-  };
-  showValid("lastName");
+  } else {
+    showValid("lastName");
+  }
 });
 adress.addEventListener("change", function () {
   if (!validAddress()) {
-    showErr(
-      "adress",
-      "Invalide, veuillez entrée une addresse."
-    );
+    showErr("address", "Invalide, veuillez entrée une addresse.");
+  } else {
+    showValid("address");
   }
-  showValid("adress");
 });
 city.addEventListener("change", function () {
   if (!validCity()) {
-    showErr(
-      "city",
-      "Invalide, veillez entrez un nom de ville comme: Paris"
-    );
+    showErr("city", "Invalide, veillez entrez un nom de ville comme: Paris");
+  } else {
+    showValid("city");
   }
-  showValid("city");
 });
 email.addEventListener("change", function () {
   if (!validEmail()) {
@@ -48,8 +45,9 @@ email.addEventListener("change", function () {
       "email",
       "Veuillez entrer une adresse e-mail valide, exemple : email@domain.com"
     );
+  } else {
+    showValid("email");
   }
-  showValid("email");
 });
 
 /// si tout  renvoi true alors on envoie le formulaire.
@@ -90,7 +88,6 @@ document.getElementById("order").addEventListener("click", function (e) {
     .then(function (response) {
       window.location.assign("confirmation.html?orderId=" + response.orderId);
     });
-
 });
 //1 verifier les element mis dans le formulaire
 function validFirstName() {
@@ -99,30 +96,29 @@ function validFirstName() {
   console.log(regex.test(firstName.value));
   if (regex.test(firstName.value)) {
     valide = true;
-  } 
-  return valide
+  }
+  return valide;
 }
-function validLastName() { 
+function validLastName() {
   let valide = false;
   let regex = new RegExp("^[A-Z][A-Za-ëïzéèê\\-]+$");
   console.log(regex.test(lastName.value));
   if (regex.test(lastName.value)) {
     valide = true;
-  } 
- return valide;
-};
+  }
+  return valide;
+}
 
-function validAddress() { 
-  
+function validAddress() {
   let valide = false;
   let regex = new RegExp("[0-9-A-Za-z]{3,}\\s"); 
   console.log(regex.test(adress.value));
   if (regex.test(adress.value)) {
     valide = true;
-  } 
+  }
   return valide;
 }
-function validCity() { 
+function validCity() {
   let valide = false;
   let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
   console.log(regex.test(city.value));
@@ -132,24 +128,26 @@ function validCity() {
   return valide;
 }
 
-function validEmail() {   
+function validEmail() {
   let valide = false;
-  let regex = new RegExp("^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$");
+  let regex = new RegExp(
+    "^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$"
+  );
   console.log(regex.test(email.value));
   if (regex.test(email.value)) {
-  valide = true;
-  } 
-  return valide
+    valide = true;
+  }
+  return valide;
 }
 // message de validation du formulaire
 
 function showErr(element, message) {
   console.log(document.getElementById(`${element}ErrorMsg`));
   console.log(message);
-  document.getElementById(`${element}ErrorMsg`).style.display = "initial";
-  document.getElementById(`${element}ErrorMsg`).textContent = `${message}`;
+  document.getElementById(`${element}ErrorMsg`).style.display = "unset";
+  document.getElementById(`${element}ErrorMsg`).textContent = `${message}`
 }
 
-function showValid(element){
-  document.getElementById(`${element}ErrorMsg`).style.display = "none";
+function showValid(element) {
+  document.getElementById(`${element}ErrorMsg`).style.display = "none"
 }
