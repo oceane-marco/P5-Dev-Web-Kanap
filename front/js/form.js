@@ -1,62 +1,62 @@
 //* formulaire
-let lastName = document.getElementById("lastName");
-let firstName = document.getElementById("firstName");
-let adress = document.getElementById("address");
-let city = document.getElementById("city");
-let email = document.getElementById("email");
+let form = []
+let lastName =  { 
+  element : document.getElementById("lastName"),
+  regex : "^[A-Z][A-Za-ëïzéèê\\-]+$", 
+  ErrorMsg : document.getElementById("lastNameErrorMsg"),
+  message : "Invalide, veuillez entrée vortre nom avec un majuscule au debut et au moins 3 lettres.",
+ };
+let firstName = {
+  element: document.getElementById("firstName"),
+  regex: "^[A-Z][A-Za-ëïzéèê\\-]{2,}$",
+  ErrorMsg: document.getElementById("firstNameErrorMsg"),
+  message : "Invalide, veuillez entrée vortre prénom avec une majuscule au debut et au moins 3 lettres.",
+ };
+let address = {
+  element: document.getElementById("address"),
+  regex: "[0-9-A-Za-zëïéèê\\-]\\s",
+  ErrorMsg: document.getElementById("addressErrorMsg"),
+  message: "Invalide, veuillez entrée une addresse.",
+};
+let city = {
+  element: document.getElementById("city"),
+  regex: "^[A-Z][A-Za-ëïzéèê-]+$",
+  ErrorMsg: document.getElementById("cityErrorMsg"),
+  message : "Invalide, veillez entrez un nom de ville comme: Paris"
+ };
+let email = {
+  element: document.getElementById("email"),
+  regex: "^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$",
+  ErrorMsg: document.getElementById("emailErrorMsg"),
+  message: "Veuillez entrer une adresse e-mail valide, exemple : email@domain.com",
+};
+form.push( firstName,lastName, address, city, email)
+
 // écoute des formulaire
-firstName.addEventListener("change", function () {
-  if (!validFirstName()) {
-    showErr(
-      "firstName",
-      "Invalide, veuillez entrée vortre prénom avec une majuscule au debut et au moins 3 lettres."
-    );
-  } else {
-    showValid("firstName");
-  }
-});
-lastName.addEventListener("change", function () {
-  if (!validLastName()) {
-    showErr(
-      "lastName",
-      "Invalide, veuillez entrée vortre nom avec un majuscule au debut et au moins 3 lettres."
-    );
-  } else {
-    showValid("lastName");
-  }
-});
-adress.addEventListener("change", function () {
-  if (!validAddress()) {
-    showErr("address", "Invalide, veuillez entrée une addresse.");
-  } else {
-    showValid("address");
-  }
-});
-city.addEventListener("change", function () {
-  if (!validCity()) {
-    showErr("city", "Invalide, veillez entrez un nom de ville comme: Paris");
-  } else {
-    showValid("city");
-  }
-});
-email.addEventListener("change", function () {
-  if (!validEmail()) {
-    showErr(
-      "email",
-      "Veuillez entrer une adresse e-mail valide, exemple : email@domain.com"
-    );
-  } else {
-    showValid("email");
-  }
+
+form.forEach((elt) =>{ 
+  elt.element.addEventListener("change", function () {
+    if (!valid(elt.element, elt.regex)) {
+      showErr( elt.ErrorMsg, elt.message);
+    } else {
+      showValid(elt.ErrorMsg);
+    }
+  });
 });
 
-/// si tout  renvoi true alors on envoie le formulaire.
+//envoyer les donner
 document.getElementById("order").addEventListener("click", function (e) {
   e.preventDefault();
-  if ( !validFirstName() || !validLastName() || !validAddress() || !validCity() || !validEmail()) {
-    alert("veuillez remplir le formulaire");
-    return;
-  }
+  let elementisvalid = 0; 
+  form.forEach((elt) => { 
+    if (valid(elt.element, elt.regex)){
+   return elementisvalid += 1
+  } 
+ });
+ if (elementisvalid < 5) {
+   alert("veuillez remplir le formulaire");
+   return;
+ }
   console.log("le formulaire est bon");
   //mettre toutes les information dans un tableau
   let products = JSON.parse(localStorage.getItem("products"));
@@ -65,13 +65,14 @@ document.getElementById("order").addEventListener("click", function (e) {
   let payload = {
     products: ids,
     contact: {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      address: adress.value,
-      city: city.value,
-      email: email.value,
+      firstName: firstName.element.value,
+      lastName: lastName.element.value,
+      address: address.element.value,
+      city: city.element.value,
+      email: email.element.value,
     }
   };
+  console.log(payload);
   // netoyer le local storage
   localStorage.clear();
   // envoyer les donner au local storage 
@@ -89,65 +90,26 @@ document.getElementById("order").addEventListener("click", function (e) {
       window.location.assign("confirmation.html?orderId=" + response.orderId);
     });
 });
-//1 verifier les element mis dans le formulaire
-function validFirstName() {
-  let valide = false;
-  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]{3,}$");
-  console.log(regex.test(firstName.value));
-  if (regex.test(firstName.value)) {
-    valide = true;
+//* fonction
+// verifier les element mis dans le formulaire
+function valid(element, regextxt) { 
+  let regex = new RegExp(`${regextxt}`);
+  console.log(regex.test(element.value));
+  if (regex.test(element.value)) {
+   return true;
   }
-  return valide;
-}
-function validLastName() {
-  let valide = false;
-  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê\\-]+$");
-  console.log(regex.test(lastName.value));
-  if (regex.test(lastName.value)) {
-    valide = true;
-  }
-  return valide;
+  return false;
 }
 
-function validAddress() {
-  let valide = false;
-  let regex = new RegExp("[0-9-A-Za-z]{3,}\\s"); 
-  console.log(regex.test(adress.value));
-  if (regex.test(adress.value)) {
-    valide = true;
-  }
-  return valide;
-}
-function validCity() {
-  let valide = false;
-  let regex = new RegExp("^[A-Z][A-Za-ëïzéèê-]+$");
-  console.log(regex.test(city.value));
-  if (regex.test(city.value)) {
-    valide = true;
-  }
-  return valide;
-}
-
-function validEmail() {
-  let valide = false;
-  let regex = new RegExp(
-    "^([A-Za-z0-9_\\-\\.])+@([A-Za-z0-9_\\-\\.])+.([A-Za-z]{2,4})$"
-  );
-  console.log(regex.test(email.value));
-  if (regex.test(email.value)) {
-    valide = true;
-  }
-  return valide;
-}
 // message de validation du formulaire
 
-function showErr(element, message) {
-  console.log(document.getElementById(`${element}ErrorMsg`));
+function showErr(ErrorMsg, message) {
+  console.log(ErrorMsg);
   console.log(message);
-  document.getElementById(`${element}ErrorMsg`).style.display = "unset";
-  document.getElementById(`${element}ErrorMsg`).textContent = `${message}`
+  ErrorMsg.style.display = "unset";
+  ErrorMsg.textContent = `${message}`;
 }
 
-function showValid(element) {
-  document.getElementById(`${element}ErrorMsg`).style.display = "none"
+function showValid(ErrorMsg) {
+  ErrorMsg.style.display = "none";
 }

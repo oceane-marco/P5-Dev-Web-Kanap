@@ -7,7 +7,6 @@ let id = getProductId();
     .then(function (product) {
       displayProduct(product);
       listenForCardAddition(product);
-      return product;
     });
 
 ///* fonction
@@ -42,40 +41,39 @@ function displayProduct(product) {
     colorSelector.insertAdjacentHTML("beforeend", colorOption);
   }
 }
-// recuperé les donner entré par l'utilisateur et le mettre dans le localstorage
+// recuperé les donner entré par l'utilisateur
 function listenForCardAddition(product) {
+  let name = product.name ;
   document.getElementById("addToCart").addEventListener("click", function () {
     let color = document.getElementById("colors").value;
     let quantity = document.getElementById("quantity").value;
-    
-
     if (quantity < 1) {
       return alert("Veuillez Choisir une quantitée superieur à 0.");
     }
     if (color == "") {
       return alert("Veuiller choisir une couleur");
     }
-
-    let product = { id, color, quantity };
-    let products = [];
-
+    isProductInCart(name, color, quantity);
+  });
+}
+// mettre les donnée dans le localstorage
+function isProductInCart(name,color, quantity) {
+   let product = { id, color, quantity };
+   let products = [];
     if (localStorage.getItem("products")) {
       products = JSON.parse(localStorage.getItem("products"));
     }
-    console.log(products);
+ 
+  let productAlreadyInCart = products.find(
+    (product) => product.color == color && product.id == id
+  );
 
-    let productAlreadyInCart = products.find(
-      (product) => product.color == color && product.id == id
-    );
-
-    if (productAlreadyInCart) {
-      productAlreadyInCart.quantity =
-        Number(productAlreadyInCart.quantity) + Number(quantity);
-    } else {
-      products.push(product);
-    }
-
-    localStorage.setItem("products", JSON.stringify(products));
-    alert(quantity + " canapés ont était ajouter au panier !");
-  });
+  if (productAlreadyInCart) {
+    productAlreadyInCart.quantity =
+      Number(productAlreadyInCart.quantity) + Number(quantity);
+  } else {
+    products.push(product);
+  }
+   localStorage.setItem("products", JSON.stringify(products));
+   alert("Plus " + quantity + " " + name + " de couleur " + color + " dans le panier !" );
 }
