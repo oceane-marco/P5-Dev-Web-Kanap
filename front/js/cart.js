@@ -61,12 +61,12 @@ function render(product) {
                 <img src=${product.imageUrl} alt=${product.altTxt}>
             </div>
             <div class="cart__item__content">
-                <div class="cart__item__content__titlePrice">
-                    <h2>${product.name}</h2>
-                    <p>${formatter.format(product.price)}</p>
-                    <p>${product.color}</p>
-                </div>
-                <div class="cart__item__content__settings">
+              <div class="cart__item__content__titlePrice">
+                  <h2>${product.name}</h2>
+                  <p>${formatter.format(product.price)}</p>
+                  <p>${product.color}</p>
+              </div>
+              <div class="cart__item__content__settings">
                 <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
                     <input type="number" class="itemQuantity" id="quantity-${product._id}-${product.color}" name="itemQuantity" min="1" max="100" value ="${product.quantity}">
@@ -74,7 +74,7 @@ function render(product) {
                 <div class="cart__item__content__settings__delete">
                     <p class="deleteItem" id="delete-button-${product._id}-${product.color}">Supprimer</p>
                 </div>
-                </div>
+              </div>
             </div>
         </article>`;
 }
