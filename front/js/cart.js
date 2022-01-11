@@ -90,7 +90,9 @@ function displayTotalPrice(products) {
 function displayTotalQuantity(products) {
   let totalQuantity = 0;
   products.forEach((product) => {
+  
     totalQuantity += Number(product.quantity);
+  
   });
   document.getElementById(`totalQuantity`).innerText = totalQuantity;
 }
@@ -100,24 +102,37 @@ function listenDeleteProduct(products, productsInCart) {
     document
       .getElementById(`delete-button-${product._id}-${product.color}`)
       .addEventListener("click", function () {
-        let confirm = window.confirm("Etes vous sûr de vouloir supprimer L'article " + product.name + " de couleur " + product.color + " ?");
-        if (confirm) {
-          let index = productsInCart.findIndex((element) => element.id == product.id && element.color == product.color);
-          console.log(index);
-          productsInCart.splice(index, 1);
-          localStorage.setItem("products", JSON.stringify(productsInCart));
-          document.getElementById(`${product._id}-${product.color}`).remove();
-          displayTotalPrice(products);
-          displayTotalQuantity(products);
+        let confirm = window.confirm( "Etes vous sûr de vouloir supprimer L'article " + product.name + " de couleur " +product.color + " ?");
+        if (confirm){
+          deleteProduct(product, products, productsInCart);
+ 
         }
+       
       });
   });
+}
+function deleteProduct(product, products, productsInCart) {
+  let index = productsInCart.findIndex(
+    (element) => element.id == product.id && element.color == product.color
+  );
+  console.log(index);
+  productsInCart.splice(index, 1);
+  localStorage.setItem("products", JSON.stringify(productsInCart));
+  document.getElementById(`${product._id}-${product.color}`).remove();
+  displayTotalPrice(products);
+  displayTotalQuantity(products);
+
 }
 //ecoute du de la quantiter du produit
 function listenChangeQuantity(products, productsInCart) {
   products.forEach((product) => {
     document.getElementById(`quantity-${product._id}-${product.color}`).addEventListener("change", function () {
-      let quantity = this.value;
+      let quantity = Number(this.value)
+      if (quantity <= 1) {
+        alert("Veuillez Choisir une quantitée superieur à 0.");
+        quantity = Number(1);
+        this.value = 1;
+      } 
       let filterProduct = productsInCart.find((productInCart) => productInCart.id == product._id || productInCart.color == product.color);
 
       filterProduct.quantity = Number(quantity);
