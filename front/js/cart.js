@@ -128,11 +128,16 @@ function listenChangeQuantity(products, productsInCart) {
   products.forEach((product) => {
     document.getElementById(`quantity-${product._id}-${product.color}`).addEventListener("change", function () {
       let quantity = Number(this.value)
-      if (quantity <= 1) {
+      if (quantity < 1) {
         alert("Veuillez Choisir une quantitée superieur à 0.");
         quantity = Number(1);
         this.value = 1;
       } 
+        if (quantity > 100) {
+          alert("Vous ne pouvez pas choisir une quantité superrieur à 100.");
+          quantity = Number(100);
+          this.value = 100;
+        } 
       let filterProduct = productsInCart.find((productInCart) => productInCart.id == product._id || productInCart.color == product.color);
 
       filterProduct.quantity = Number(quantity);

@@ -50,6 +50,9 @@ function listenForCardAddition(product) {
     if (quantity < 1) {
       return alert("Veuillez Choisir une quantitée superieur à 0.");
     }
+     if (quantity > 100) {
+      return alert("Vous ne pouvez pas choisir une quantité superrieur à 100.");
+    } 
     if (color == "") {
       return alert("Veuiller choisir une couleur");
     }
