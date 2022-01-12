@@ -129,11 +129,11 @@ function listenChangeQuantity(products, productsInCart) {
         quantity = 1;
         this.value = 1;
       } 
-        if (quantity > 100) {
-          alert("Vous ne pouvez pas choisir une quantité superrieur à 100.");
-          quantity = Number(100);
-          this.value = 100;
-        } 
+      if (quantity > 100) {
+        alert("Vous ne pouvez pas choisir une quantité superrieur à 100.");
+        quantity = Number(100);
+        this.value = 100;
+      } 
       let filterProduct = productsInCart.find((productInCart) => productInCart.id == product._id && productInCart.color == product.color);
       filterProduct.quantity = Number(quantity);
       product.quantity = Number(quantity);
