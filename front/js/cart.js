@@ -111,17 +111,13 @@ function listenDeleteProduct(products, productsInCart) {
       });
   });
 }
-function deleteProduct(product, products, productsInCart) {
-  let index = productsInCart.findIndex(
-    (element) => element.id == product.id && element.color == product.color
-  );
+function deleteProduct(product, productsInCart) {
+  let index = productsInCart.findIndex((element) => element.id == product.id && element.color == product.color);
   console.log(index);
   productsInCart.splice(index, 1);
   localStorage.setItem("products", JSON.stringify(productsInCart));
   document.getElementById(`${product._id}-${product.color}`).remove();
-  displayTotalPrice(products);
-  displayTotalQuantity(products);
-
+  location.reload();
 }
 //ecoute du de la quantiter du produit
 function listenChangeQuantity(products, productsInCart) {
