@@ -104,7 +104,7 @@ function listenDeleteProduct(products, productsInCart) {
       .addEventListener("click", function () {
         let confirm = window.confirm( "Etes vous sûr de vouloir supprimer L'article " + product.name + " de couleur " +product.color + " ?");
         if (confirm){
-          deleteProduct(product, products, productsInCart);
+          deleteProduct(product, productsInCart);
  
         }
        
@@ -126,7 +126,7 @@ function listenChangeQuantity(products, productsInCart) {
       let quantity = Number(this.value)
       if (quantity < 1) {
         alert("Veuillez Choisir une quantitée superieur à 0.");
-        quantity = Number(1);
+        quantity = 1;
         this.value = 1;
       } 
         if (quantity > 100) {
@@ -134,11 +134,9 @@ function listenChangeQuantity(products, productsInCart) {
           quantity = Number(100);
           this.value = 100;
         } 
-      let filterProduct = productsInCart.find((productInCart) => productInCart.id == product._id || productInCart.color == product.color);
-
+      let filterProduct = productsInCart.find((productInCart) => productInCart.id == product._id && productInCart.color == product.color);
       filterProduct.quantity = Number(quantity);
       product.quantity = Number(quantity);
-      
       localStorage.setItem("products", JSON.stringify(productsInCart));
       displayTotalQuantity(products);
       displayTotalPrice(products);
